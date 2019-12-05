@@ -12,14 +12,22 @@ class Point:
     
     def distanceFromOrigin(this):
         return abs(this.x) + abs(this.y)
+        
+    def distanceFromPoint(this, p):
+        return abs(this.x - p.x) + abs(this.y - p.y)
     
 class Edge:
-    def __init__(this, a, b):
+    def __init__(this, a, b ,cost, i):
         this.a = a
         this.b = b
+        this.i = i
+        this.cost = cost
     
     def isHorizontal(this):
         return this.a.y == this.b.y
+        
+    def getSelfCost(this):
+        return abs(this.a.x - this.b.x) + abs(this.a.y - this.b.y)
         
     def __str__(this):
         return str(this.a) + " - " + str(this.b)
@@ -43,25 +51,27 @@ def addCommandToPoint(point, command):
     elif command.direction == 'D':
         return Point(a.x, a.y - command.scale)
     elif command.direction == 'L':
-        return Point(a.x - command.scale, a.y) 
+        return Point(a.x - command.scale, a.y)
         
-def buildEdgeFromPointAndCommand(a, command):
+def buildEdgeFromPointAndCommand(a, command, cost):
     a = copy.deepcopy(a)
     b = addCommandToPoint(a, command)
     
     if command.direction == 'U' or command.direction == 'R':        
-        return Edge(a, b), b
+        return Edge(a, b, cost, a), b
     else:        
-        return Edge(b, a), b
+        return Edge(b, a, cost, a), b
     
     
 class Wire:
     def __init__(this, commands):
         p = Point(0, 0)
         this.edges = []
+        cost = 0
         
         for c in commands:
-            edge, p = buildEdgeFromPointAndCommand(p, c)
+            edge, p = buildEdgeFromPointAndCommand(p, c, cost)
+            cost += edge.getSelfCost()
             this.edges.append(edge)
     
     def __str__(this):
