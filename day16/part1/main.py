@@ -2,17 +2,21 @@ base_pattern = [0, 1, 0, -1]
 
 def applyPhase(input):
     output = []
+    inputSize = len(input)
     
-    for i in range(len(input)):
-        pattern = []
-        for n in base_pattern:
-            pattern.extend([n] * (i+1))
-        
-        pIndex = 1
+    for i in range(inputSize):
         total = 0
-        for n in input:
-            total += (n * pattern[pIndex])
-            pIndex = (pIndex + 1) % len(pattern)
+        
+        j = i
+        multiplier = 1
+        while j < inputSize:
+            for k in range(j, j+i+1):
+                if k >= inputSize:
+                    break
+                total += input[k] * multiplier
+            j += (2 * i) + 2
+            multiplier *= -1
+        
         output.append(abs(total) % 10)
     
     return output
